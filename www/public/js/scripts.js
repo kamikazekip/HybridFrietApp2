@@ -5,6 +5,7 @@ var globalUsersLoaded = false;
 var globalServerUrl = "https://desolate-bayou-9128.herokuapp.com";
 var globalSelectedOrder = 0;
 var globalLocation = 0;
+var globalGeoLocation = null;
 
 var groups = [
 {"_id":1, "name":"Static group", "owner" : "sjaak", "activeOrders" : 4},
@@ -51,7 +52,12 @@ $(document).ready(function(){
 	getAuthHeader();
 	loadDishes();
 	loadUsers();
-	
+
+
+	if(parseFloat(window.device.version)=== 7.0){
+		document.body.style.marginTop ="20px";
+	}
+	navigator.geolocation.getCurrentPosition(onSuccess, onError);
 	$("#placeOrderButton").on("tap", function(){
 		var scopeDish = $("#select-products-order").val();
 
@@ -93,6 +99,69 @@ $(document).ready(function(){
 	   
 	});
 });
+
+
+ 
+
+    // onSuccess Geolocation
+    //
+    function onSuccess(position) {
+        var element = document.getElementById('geolocation');
+        console.log(position);
+        element.innerHTML = 'Latitude: '           + position.coords.latitude              + '<br />' +
+                            'Longitude: '          + position.coords.longitude             + '<br />' +
+                            'Altitude: '           + position.coords.altitude              + '<br />' +
+                            'Accuracy: '           + position.coords.accuracy              + '<br />' +
+                            'Altitude Accuracy: '  + position.coords.altitudeAccuracy      + '<br />' +
+                            'Heading: '            + position.coords.heading               + '<br />' +
+                            'Speed: '              + position.coords.speed                 + '<br />' +
+                            'Timestamp: '          + position.timestamp                    + '<br />';
+        globalLocation = position;
+
+        $.ajax( {
+					url : globalServerUrl + '/snackbars/?lat='+globalLocation.coords.latitude+ '&long='+globalLocation.coords.longitude,
+					dataType : 'json',
+					type : "get",
+					beforeSend : function(xhr) {
+				          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+				          //var base64 = Crypto.util.bytesToBase64(bytes);
+				          xhr.setRequestHeader("Authorization", globalAuthheader);
+					},
+					error : function(xhr, ajaxOptions, thrownError) {
+						if (thrownError === "Unauthorized"){
+							console.log('unauthorized');
+						}
+						else{
+							console.log('Something went wrong');
+						}
+						// Fout weergeven op login scherm
+						$('.message-error').html("Invalid login !");
+						$('#login-text-gebruikersnaam').val("");
+						$('#login-text-wachtwoord').val("");
+						clearMessages();
+						
+					},
+					success : function(model) {
+						console.log('We got some snackbars bro');
+						for(i = 0; i < model.length; i ++){
+							$('#list-bestlling-snackbars').append('<button class="ui-btn ui-shadow" id="group-button-place-order">'+model[i].snackbar+'</button>');
+
+						}
+
+						
+						console.log(model);
+					}
+				});
+
+
+    }
+
+     // onError Callback receives a PositionError object
+    //
+    function onError(error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }
 
 function loadUsers(){
 	console.log('WTF');

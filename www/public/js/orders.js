@@ -91,33 +91,33 @@ function newOrder(){
 	var r = confirm("Nieuwe bestelling halen ?");
 	if (r == true) {
 	    $.ajax( {
-				url : globalServerUrl + '/groups/'+globalSelectedGroup+"/order",
-				dataType : 'json',
-				type : "Post",
-				beforeSend : function(xhr) {
-			          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
-			          //var base64 = Crypto.util.bytesToBase64(bytes);
-			          xhr.setRequestHeader("Authorization", globalAuthheader);
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					if (thrownError === "Unauthorized"){
-						console.log('unauthorized');
-					}
-					else{
-						console.log('Something went wrong');
-					}
-					// Fout weergeven op login scherm
-					$('.message-error').html("Invalid login !");
-					$('#login-text-gebruikersnaam').val("");
-					$('#login-text-wachtwoord').val("");
-					clearMessages();
-					
-				},
-				success : function(model) {
-					$('#group-list-orders').append('<button class="ui-btn  group-btn-order group-btn-order-active" data-id="'+model.order._id+'">'+ readAbleDate(model.order.date) +' - '+ model.order.creator+'</button>');	
-					$.mobile.changePage("#page-group", {transition : "slideup"});
+			url : globalServerUrl + '/groups/'+globalSelectedGroup+"/order",
+			dataType : 'json',
+			type : "Post",
+			beforeSend : function(xhr) {
+		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+		          //var base64 = Crypto.util.bytesToBase64(bytes);
+		          xhr.setRequestHeader("Authorization", globalAuthheader);
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				if (thrownError === "Unauthorized"){
+					console.log('unauthorized');
 				}
-			});
+				else{
+					console.log('Something went wrong');
+				}
+				// Fout weergeven op login scherm
+				$('.message-error').html("Invalid login !");
+				$('#login-text-gebruikersnaam').val("");
+				$('#login-text-wachtwoord').val("");
+				clearMessages();
+				
+			},
+			success : function(model) {
+				$('#group-list-orders').append('<button class="ui-btn  group-btn-order group-btn-order-active" data-id="'+model.order._id+'">'+ readAbleDate(model.order.date) +' - '+ model.order.creator+'</button>');	
+				$.mobile.changePage("#page-group", {transition : "slideup"});
+			}
+		});
 	} 
 }
 
