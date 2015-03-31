@@ -7,6 +7,85 @@ $(document).on('click','#group-button-order', function() {
 	$.mobile.changePage("#page-newOrder", {transition : "slideup"});
 })
 
+// Inloggen
+$(document).on('click','#orderDoneButton', function() {
+	console.log(globalSelectedOrder);
+	$.ajax( {
+		url : globalServerUrl + '/orders/'+globalSelectedOrder,
+		dataType : 'json',
+		type : "Put",
+		beforeSend : function(xhr) {
+	          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+	          //var base64 = Crypto.util.bytesToBase64(bytes);
+	          xhr.setRequestHeader("Authorization", globalAuthheader);
+		},
+		error : function(xhr, ajaxOptions, thrownError) {
+			if (thrownError === "Unauthorized"){
+				console.log('unauthorized');
+			}
+			else{
+				console.log('Something went wrong');
+			}
+			
+		},
+		success : function(model) {
+			$("body").find("[data-id='" + globalSelectedOrder + "']").removeClass('group-btn-order-active');
+			 history.back();
+		}
+	});
+})
+
+// Een bestelling bekijken.
+$(document).on('click','.group-btn-order', function() {	
+	var title = $(this).html();
+	var orderId = $(this).data("id");
+	if($(this).hasClass('group-btn-order-active')){
+		$('#orderPlaatsenInputFields').show();
+		$('#orderDoneButton').show();
+	}
+	else{
+		$('#orderDoneButton').hide();
+		$('#orderPlaatsenInputFields').hide();
+	}
+	if(orderId !== globalSelectedOrder){
+		$('#order-table-orders tbody').empty();
+		globalSelectedOrder = orderId;
+		$("#order-title-name").html(title);
+		//Groeps informatie ophalen
+		
+		$.ajax( {
+			url : globalServerUrl + '/orders/'+globalSelectedOrder+'/dishes',
+			dataType : 'json',
+			type : "get",
+			beforeSend : function(xhr) {
+		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+		          //var base64 = Crypto.util.bytesToBase64(bytes);
+		          xhr.setRequestHeader("Authorization", globalAuthheader);
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				if (thrownError === "Unauthorized"){
+					console.log('unauthorized');
+				}
+				else{
+					console.log('Something went wrong');
+				}
+				
+			},
+			success : function(model) {
+				orders = model;
+				for(i = 0; i < orders.length; i++) {
+					$('#order-table-orders tbody').append('<tr><td>'+orders[i].creator +'</td><td>'+orders[i].dish+'</td></tr>');
+				}
+			}
+		});
+	}
+	else{
+		console.log("Bestellling was al geopend");
+	}
+	
+	$.mobile.changePage("#page-order", {transition : "slide"});	
+})
+
 
 function newOrder(){
 	var r = confirm("Nieuwe bestelling halen ?");

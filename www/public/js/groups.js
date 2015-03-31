@@ -12,6 +12,36 @@ $(document).on('click','.main-btn-group', function() {
 	viewGroup($(this).data("id"));
 })
 
+// Een  gebruiker toevoegen aan de gorep
+$(document).on('click','#btn-addToGroup', function() {	
+	var scopeSelectedUser = $("#userNameAddToGroup").val();
+	$.ajax( {
+			url : globalServerUrl + '/groups/'+globalSelectedGroup+'/addUser/'+scopeSelectedUser,
+			dataType : 'json',
+			type : "Post",
+			beforeSend : function(xhr) {
+		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+		          //var base64 = Crypto.util.bytesToBase64(bytes);
+		          xhr.setRequestHeader("Authorization", globalAuthheader);
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				if (thrownError === "Unauthorized"){
+					console.log('unauthorized');
+				}
+				else{
+					console.log('Something went wrong');
+				}
+				
+				
+			},
+			success : function(model) {
+				history.back();
+			}
+		});
+})
+
+
+
 
 $(document).ready(function(){
 	if(checkLogin()){
@@ -30,34 +60,34 @@ function addGroup(groupName){
 	}
 	else{
 		$.ajax( {
-				url : globalServerUrl + '/groups/'+newGroupsName,
-				dataType : 'json',
-				type : "Post",
-				beforeSend : function(xhr) {
-			          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
-			          //var base64 = Crypto.util.bytesToBase64(bytes);
-			          xhr.setRequestHeader("Authorization", globalAuthheader);
-				},
-				error : function(xhr, ajaxOptions, thrownError) {
-					if (thrownError === "Unauthorized"){
-						console.log('unauthorized');
-					}
-					else{
-						console.log('Something went wrong');
-					}
-					// Fout weergeven op login scherm
-					$('.message-error').html("Invalid login !");
-					$('#login-text-gebruikersnaam').val("");
-					$('#login-text-wachtwoord').val("");
-					clearMessages();
-					
-				},
-				success : function(model) {
-					globalGroupsLoaded = false;
-					loadGroups();
-					$.mobile.changePage("#page-main", {transition : "slidedown"});
+			url : globalServerUrl + '/groups/'+newGroupsName,
+			dataType : 'json',
+			type : "Post",
+			beforeSend : function(xhr) {
+		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+		          //var base64 = Crypto.util.bytesToBase64(bytes);
+		          xhr.setRequestHeader("Authorization", globalAuthheader);
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				if (thrownError === "Unauthorized"){
+					console.log('unauthorized');
 				}
-			});
+				else{
+					console.log('Something went wrong');
+				}
+				// Fout weergeven op login scherm
+				$('.message-error').html("Invalid login !");
+				$('#login-text-gebruikersnaam').val("");
+				$('#login-text-wachtwoord').val("");
+				clearMessages();
+				
+			},
+			success : function(model) {
+				globalGroupsLoaded = false;
+				loadGroups();
+				$.mobile.changePage("#page-main", {transition : "slidedown"});
+			}
+		});
 		
 	}
 }

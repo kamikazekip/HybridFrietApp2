@@ -1,6 +1,7 @@
 // Zorgen dat de groepen maar een maal worden ingeladen
 
 var globalDishesLoaded = false;
+var globalUsersLoaded = false;
 var globalServerUrl = "https://desolate-bayou-9128.herokuapp.com";
 var globalSelectedOrder = 0;
 var globalLocation = 0;
@@ -47,14 +48,16 @@ var orderDetails = [
 // -----------------   PAGE LOADS -----------------
 
 $(document).ready(function(){
+	getAuthHeader();
 	loadDishes();
+	loadUsers();
 	
 	$("#placeOrderButton").on("tap", function(){
 		var scopeDish = $("#select-products-order").val();
 
 		var scopeData = {
 			"dish" : scopeDish
-		};
+		}; 
 	    
 	     $.ajax( {
 			url : globalServerUrl + '/orders/'+globalSelectedOrder+"/dish",
@@ -90,6 +93,40 @@ $(document).ready(function(){
 	   
 	});
 });
+
+function loadUsers(){
+	console.log('WTF');
+	
+	if(!globalUsersLoaded){
+
+		$.ajax( {
+			url : globalServerUrl + '/users',
+			dataType : 'json',
+			type : "get",
+			beforeSend : function(xhr) {
+		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
+		          //var base64 = Crypto.util.bytesToBase64(bytes);
+		          xhr.setRequestHeader("Authorization", globalAuthheader);
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				if (thrownError === "Unauthorized"){
+					console.log('unauthorized');
+				}
+				else{
+					console.log('Something went wrong');
+				}
+				
+			},
+			success : function(users) {
+				for(i = 0; i < users.length; i ++){
+					$('#userNameAddToGroup').append('<option value="'+users[i].username+'">'+users[i].username+'</option>');
+				}
+				globalUsersLoaded = true;
+			}
+		});
+	}
+	
+}
 
 function loadDishes(){
 	if(!globalDishesLoaded){
@@ -127,48 +164,7 @@ $(document).on('pagebeforeshow', '#popupOrderProducts', function(){
 
 
 
-// Een bestelling bekijken.
-$(document).on('click','.group-btn-order', function() {	
-	var title = $(this).html();
-	var orderId = $(this).data("id")
-	if(orderId !== globalSelectedOrder){
-		$('#order-table-orders tbody').empty();
-		globalSelectedOrder = orderId;
-		$("#order-title-name").html(title);
-		//Groeps informatie ophalen
-		
-		$.ajax( {
-			url : globalServerUrl + '/orders/'+globalSelectedOrder+'/dishes',
-			dataType : 'json',
-			type : "get",
-			beforeSend : function(xhr) {
-		          //var bytes = Crypto.charenc.Binary.stringToBytes(inputUserName + ":" + inputPassword);
-		          //var base64 = Crypto.util.bytesToBase64(bytes);
-		          xhr.setRequestHeader("Authorization", globalAuthheader);
-			},
-			error : function(xhr, ajaxOptions, thrownError) {
-				if (thrownError === "Unauthorized"){
-					console.log('unauthorized');
-				}
-				else{
-					console.log('Something went wrong');
-				}
-				
-			},
-			success : function(model) {
-				orders = model;
-				for(i = 0; i < orders.length; i++) {
-					$('#order-table-orders tbody').append('<tr><td>'+orders[i].creator +'</td><td>'+orders[i].dish+'</td></tr>');
-				}
-			}
-		});
-	}
-	else{
-		console.log("Bestellling was al geopend");
-	}
-	
-	$.mobile.changePage("#page-order", {transition : "slide"});	
-})
+
 
 $( document ).ready(function() {
 	$(document).on('click','#popupOrderProducts-send', function() {
@@ -204,6 +200,9 @@ $(document).ready(function(){
 $(document).on('click','#login-btn-login', function() {
 	login();
 })
+
+
+
 
 // Uitloggen
 $(document).on('click','#main-btn-logout', function() {

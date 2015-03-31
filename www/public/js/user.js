@@ -11,9 +11,7 @@ $(document).on('pagebeforeshow','#page-login', function() {
 	}
 });
 
-$(document).ready(function(){
-	getAuthHeader();
-});
+
 
 
 // Functie om te controleren of een gebruike  is ingelogd
@@ -136,7 +134,7 @@ function logout(){
 	globalGroupsLoaded = false;
 
 	selectedGroup = 0;
-	$.mobile.changePage("#page-splash", {transition : "slideup"});
+	$.mobile.changePage("#page-login", {transition : "slideup"});
 }
 
  function getUsername(){

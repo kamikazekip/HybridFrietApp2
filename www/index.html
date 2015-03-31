@@ -33,11 +33,6 @@
     <script src="./public/js/orders.js"></script>
     <script src="./public/js/jquery.base64.js"></script>
 
-    <script>
-
-       console.log('running js');
-    </script>
-
    
 
     <!-- Start of first page -->
@@ -114,7 +109,28 @@
 
             </div>
         </div><!-- /content -->
+        <div data-role="footer" data-position="fixed">
+          <center><a href="#page-addToGroup" class="ui-btn ui-icon-plus ui-btn-icon-left">Toevoegen aan de groep</a><center>
+        </div>
     </div><!-- /page -->
+
+
+     <!-- Lijst met bestellingen -->
+    <div data-role="page" id="page-addToGroup">
+
+        <div data-role="header">
+            <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-icon-carat-l ui-btn-icon-notext" data-transition="slide" data-direction="reverse">Terug</a> 
+            <h1 id="group-title-name">Toevoegen aan de groep</h1>
+        </div><!-- /header -->
+        <div role="main" class="ui-content">
+            <div class="ui-field-contain" i>
+                <select id="userNameAddToGroup" name="userNameAddToGroup" data-inline="true"></select>
+                <button id="btn-addToGroup" data-inline="true">Toevoegen</button>
+                 
+            </div>
+        </div>
+    </div><!-- /page -->
+
 
     <!-- Eeen bestelling bekijken -->
     <div data-role="page" id="page-order">
@@ -147,7 +163,7 @@
                     $('.footable').footable();                   
                 });
                 </script>
-                <div class="ui-field-contain">
+                <div class="ui-field-contain" id="orderPlaatsenInputFields">
                     <select id="select-products-order" name="select-products-order" data-inline="true"></select>
                     <button id="placeOrderButton" data-inline="true">Plaatsen</button>
                      
